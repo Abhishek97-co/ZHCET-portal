@@ -1,8 +1,8 @@
-const BASE = 'http://localhost:5000';
+const BASE = window.location.origin;  
 
 async function apiFetch(path, options = {}) {
   const res = await fetch(BASE + path, {
-    credentials: 'include',           
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json', ...options.headers },
     ...options,
     body: options.body ? JSON.stringify(options.body) : undefined,
