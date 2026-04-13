@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Faculty — ZHCET</title>
+
+  <link rel="stylesheet" href="../css/style.css"/>
+
+  <link rel="stylesheet" href="../css/faculty.css"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/index.html" class="brand">ZHCET Portal</a>
+
+  <div class="nav-links">
+    <a href="/index.html">Home</a>
+    <a href="/pages/departments.html">Academics</a>
+    <a href="/pages/faculties.html">Faculty</a>
+    <a id="nav-admin" href="/pages/dashboard/admin.html" style="display:none">Admin</a>
+    <a id="nav-faculty" href="/pages/dashboard/faculty.html" style="display:none">My Profile</a>
+  </div>
+
+  <a id="nav-auth" href="/pages/login.html" class="btn-login">Login</a>
+</nav>
+
+<div class="faculty-profile-container">
+
+  <div id="breadcrumb" class="breadcrumb"></div>
+
+  <div id="content"></div>
+
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script>
+renderNav();
+
+const id = new URLSearchParams(window.location.search).get('id');
+if (!id) window.location.href = '/pages/faculties.html';
+
+api.get(`/api/faculties/${id}`).then(f => {
+
+  document.title = f.name + ' — ZHCET';
+
+  document.getElementById('breadcrumb').innerHTML = `
+    <a href="/pages/departments.html">Departments</a>
+    <span>/</span>
+    <a href="/pages/faculties.html?dept=${f.department?._id}&deptName=${encodeURIComponent(f.department?.name||'')}">
+      ${f.department?.name || ''}
+    </a>
+    <span>/</span>
+    <span class="active">${f.name}</span>
+  `;
+
+  document.getElementById('content').innerHTML = `
+
+    <div class="profile-card">
+
+      <!-- HEADER -->
+      <div class="profile-header">
+        <img src="${f.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(f.name)}&background=de3445&color=fff&size=120`}" />
+
+        <div class="profile-info">
+          <h1>${f.name}</h1>
+          <p class="designation">${f.designation}</p>
+          <p class="dept">${f.department?.name || ''}</p>
+          <p class="meta">Faculty ID: ${f.facultyId}</p>
+        </div>
+      </div>
+
+      <!-- BODY -->
+      <div class="profile-body">
+
+        <!-- LEFT -->
+        <div class="profile-left">
+
+          <div class="card-block">
+            <h3>Contact</h3>
+            <p><strong>Email:</strong> ${f.email}</p>
+            <p><strong>Mobile:</strong> ${f.mobile || '—'}</p>
+          </div>
+
+          ${f.qualifications?.length ? `
+          <div class="card-block">
+            <h3>Qualifications</h3>
+            <ul>
+              ${f.qualifications.map(q => `<li>${q}</li>`).join('')}
+            </ul>
+          </div>
+          ` : ''}
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="profile-right">
+
+          <div class="card-block">
+            <h3>Specialization</h3>
+            <div class="tags">
+              ${(f.specialization || []).map(s => `<span>${s}</span>`).join('')}
+            </div>
+          </div>
+
+          ${f.publications?.length ? `
+          <div class="card-block">
+            <h3>Publications</h3>
+            <ol>
+              ${f.publications.map(p => `<li>${p}</li>`).join('')}
+            </ol>
+          </div>
+          ` : ''}
+
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+}).catch(() => {
+  document.getElementById('content').innerHTML = '<p class="empty">Faculty not found</p>';
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,134 @@
+
+.admin-container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 2rem 1.5rem;
+}
+
+
+.admin-header h1 {
+  font-size: 2rem;
+  color: #b91c1c;
+}
+
+.admin-header p {
+  color: #6b7280;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin: 1.5rem 0;
+}
+
+.tab-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: none;
+  background: #f3f4f6;
+  cursor: pointer;
+}
+
+.tab-btn.active {
+  background: #de3445;
+  color: white;
+}
+
+.admin-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 10px;
+}
+
+.form-grid input,
+.form-grid select {
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.form-grid input:focus {
+  border-color: #de3445;
+  outline: none;
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+.form-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 10px;
+}
+
+.admin-table {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: #ffe4e6;
+}
+
+th, td {
+  padding: 0.7rem;
+  text-align: left;
+}
+
+td {
+  border-top: 1px solid #f3f4f6;
+}
+
+.email-cell {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-edit {
+  background: #facc15;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background: #e5e7eb;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
+
+
+#alert {
+  margin-bottom: 1rem;
+}
+.admin-table {
+  overflow-x: auto;
+}

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard — ZHCET</title>
+
+  <link rel="stylesheet" href="../../css/style.css"/>
+
+  <link rel="stylesheet" href="../../css/admin.css"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/index.html" class="brand">ZHCET Portal</a>
+
+  <div class="nav-links">
+    <a href="/index.html">Home</a>
+    <a href="/pages/departments.html">Academics</a>
+    <a href="/pages/faculties.html">Faculty</a>
+    <a href="/pages/dashboard/admin.html" class="active">Admin</a>
+  </div>
+
+  <a id="nav-auth" href="#" class="btn-login">Logout</a>
+</nav>
+
+<div class="admin-container">
+
+  <div class="admin-header">
+    <h1>Admin Dashboard</h1>
+    <p>Manage faculty and departments</p>
+  </div>
+
+  <div id="alert"></div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('faculty', this)">Faculty</button>
+    <button class="tab-btn" onclick="switchTab('dept', this)">Departments</button>
+  </div>
+
+
+  <div id="tab-faculty">
+
+    <div class="admin-card">
+      <h2 id="form-title">Add Faculty</h2>
+
+      <input type="hidden" id="edit-id"/>
+
+      <div class="form-grid">
+        <input id="f-facultyId" placeholder="Faculty ID"/>
+        <input id="f-name" placeholder="Full Name"/>
+        <input id="f-email" type="email" placeholder="Email"/>
+        <input id="f-mobile" placeholder="Mobile"/>
+        <input id="f-designation" placeholder="Designation"/>
+
+        <select id="f-department">
+          <option value="">Select Department</option>
+        </select>
+
+        <input id="f-specialization" placeholder="Specialization (comma separated)" class="full"/>
+        <input id="f-qualifications" placeholder="Qualifications (comma separated)" class="full"/>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-primary" onclick="saveFaculty()">Save</button>
+        <button class="btn-secondary" id="btn-cancel" onclick="cancelEdit()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="admin-table">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Dept</th>
+            <th>Designation</th>
+            <th>Email</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="faculty-tbody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  
+  <div id="tab-dept" style="display:none;">
+
+    <div class="admin-card">
+      <h2>Add Department</h2>
+
+      <div class="form-grid">
+        <input id="d-name" placeholder="Department Name"/>
+        <input id="d-shortName" placeholder="Short Name (CSE)"/>
+        <input id="d-description" placeholder="Description" class="full"/>
+      </div>
+
+      <button type="button" class="btn-primary" onclick="saveDept()">Add Department</button>
+    </div>
+
+    <div class="admin-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Short</th>
+            <th>Faculty</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="dept-tbody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../js/api.js"></script>
+<script src="../../js/auth.js"></script>
+
+
+<script>
+  requireRole('admin');
+  document.getElementById('nav-auth').onclick = (e) => { e.preventDefault(); logout(); };
+
+  let faculties   = [];
+  let departments = [];
+
+  function showAlert(msg, type = 'success') {
+    const el = document.getElementById('alert');
+    el.className = `alert alert-${type}`;
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 3000);
+  }
+
+  function switchTab(tab, btn) {
+    document.getElementById('tab-faculty').style.display = tab === 'faculty' ? 'block' : 'none';
+    document.getElementById('tab-dept').style.display    = tab === 'dept'    ? 'block' : 'none';
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function loadFaculties() {
+    api.get('/api/faculties?limit=100').then(res => {
+      faculties = res.data;
+      renderFacultyTable();
+    });
+  }
+
+  function loadDepartments() {
+    api.get('/api/departments').then(res => {
+      departments = res;
+      const sel = document.getElementById('f-department');
+      sel.innerHTML = '<option value=\"\">Select…</option>' +
+        res.map(d => `<option value=\"${d._id}\">${d.name}</option>`).join('');
+      renderDeptTable();
+    });
+  }
+
+  function renderFacultyTable() {
+    document.getElementById('faculty-tbody').innerHTML = faculties.map(f => `
+      <tr>
+        <td>${f.facultyId}</td>
+        <td><strong>${f.name}</strong></td>
+        <td>${f.department?.shortName || '—'}</td>
+        <td>${f.designation}</td>
+        <td class=\"email-cell\">${f.email}</td>
+        <td>
+          <button class=\"btn-edit\" onclick=\"editFaculty('${f._id}')\">Edit</button>
+          <button class=\"btn-danger\" onclick=\"deleteFaculty('${f._id}')\">Delete</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function renderDeptTable() {
+    document.getElementById('dept-tbody').innerHTML = departments.map(d => `
+      <tr>
+        <td><strong>${d.name}</strong></td>
+        <td>${d.shortName}</td>
+        <td>${d.facultyCount ?? '—'}</td>
+        <td><button class=\"btn-danger\" onclick=\"deleteDept('${d._id}')\">Delete</button></td>
+      </tr>
+    `).join('');
+  }
+
+
+
+  async function saveFaculty() {
+    const editId = document.getElementById('edit-id').value;
+    const payload = {
+      facultyId:      document.getElementById('f-facultyId').value.trim(),
+      name:           document.getElementById('f-name').value.trim(),
+      email:          document.getElementById('f-email').value.trim(),
+      mobile:         document.getElementById('f-mobile').value.trim(),
+      designation:    document.getElementById('f-designation').value.trim(),
+      department:     document.getElementById('f-department').value,
+      specialization: document.getElementById('f-specialization').value.split(',').map(s=>s.trim()).filter(Boolean),
+      qualifications:  document.getElementById('f-qualifications').value.split(',').map(s=>s.trim()).filter(Boolean),
+    };
+    try {
+      if (editId) {
+        await api.put(`/api/faculties/${editId}`, payload);
+        showAlert('Faculty updated.');
+      } else {
+        await api.post('/api/faculties', payload);
+        showAlert('Faculty added.');
+      }
+      cancelEdit();
+      loadFaculties();
+    } catch (err) { showAlert(err.message, 'error'); }
+  }
+
+  function editFaculty(id) {
+    const f = faculties.find(x => x._id === id);
+    if (!f) return;
+    document.getElementById('edit-id').value        = f._id;
+    document.getElementById('f-facultyId').value    = f.facultyId;
+    document.getElementById('f-name').value         = f.name;
+    document.getElementById('f-email').value        = f.email;
+    document.getElementById('f-mobile').value       = f.mobile || '';
+    document.getElementById('f-designation').value  = f.designation;
+    document.getElementById('f-department').value   = f.department?._id || f.department || '';
+    document.getElementById('f-specialization').value = (f.specialization||[]).join(', ');
+    document.getElementById('f-qualifications').value  = (f.qualifications||[]).join(', ');
+    document.getElementById('form-title').textContent  = 'Edit Faculty';
+    document.getElementById('btn-cancel').style.display = 'inline-block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function cancelEdit() {
+    document.getElementById('edit-id').value = '';
+    ['facultyId','name','email','mobile','designation','specialization','qualifications'].forEach(f =>
+      document.getElementById('f-'+f).value = '');
+    document.getElementById('f-department').value = '';
+    document.getElementById('form-title').textContent = 'Add Faculty';
+    document.getElementById('btn-cancel').style.display = 'none';
+  }
+
+  async function deleteFaculty(id) {
+    if (!confirm('Delete this faculty record?')) return;
+    await api.delete(`/api/faculties/${id}`);
+    showAlert('Deleted.');
+    loadFaculties();
+  }
+
+  
+  async function saveDept() {
+    const payload = {
+      name:        document.getElementById('d-name').value.trim(),
+      shortName:   document.getElementById('d-shortName').value.trim(),
+      description: document.getElementById('d-description').value.trim(),
+    };
+    try {
+      await api.post('/api/departments', payload);
+      document.getElementById('d-name').value = '';
+      document.getElementById('d-shortName').value = '';
+      document.getElementById('d-description').value = '';
+      showAlert('Department added.');
+      loadDepartments();
+    } catch (err) { showAlert(err.message, 'error'); }
+  }
+
+  async function deleteDept(id) {
+    if (!confirm('Delete this department?')) return;
+    await api.delete(`/api/departments/${id}`);
+    showAlert('Deleted.');
+    loadDepartments();
+  }
+  loadFaculties();
+  loadDepartments();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,122 @@
+
+.fd-container {
+  max-width: 900px;
+  margin: auto;
+  padding: 2rem 1.5rem;
+}
+
+.fd-header h1 {
+  font-size: 2rem;
+  color: #b91c1c;
+}
+
+.fd-header p {
+  color: #6b7280;
+}
+
+.fd-profile {
+  background: white;
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.fd-top {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.fd-top img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 3px solid #ffe4e6;
+}
+
+.fd-top h2 {
+  margin: 0;
+}
+
+.fd-top p {
+  color: #de3445;
+  font-size: 0.9rem;
+}
+
+.fd-top span {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.fd-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  margin-top: 1rem;
+  gap: 10px;
+}
+
+.fd-info div {
+  background: #f9fafb;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.fd-info span {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.fd-info strong {
+  display: block;
+  margin-top: 4px;
+}
+
+.fd-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.fd-card h3 {
+  color: #b91c1c;
+}
+
+.note {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.form-group input:focus {
+  border-color: #de3445;
+  outline: none;
+}
+
+.full-btn {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.empty {
+  text-align: center;
+  padding: 3rem;
+  color: #9ca3af;
+}

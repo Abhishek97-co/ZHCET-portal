@@ -1,0 +1,132 @@
+
+.faculty-profile-container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 2rem 1.5rem;
+}
+
+.breadcrumb {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin-bottom: 1rem;
+}
+
+.breadcrumb a {
+  color: #de3445;
+  text-decoration: none;
+}
+
+.breadcrumb span {
+  margin: 0 6px;
+}
+
+.breadcrumb .active {
+  color: #374151;
+}
+
+.profile-card {
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.profile-header {
+  background: linear-gradient(135deg, #de3445, #b91c1c);
+  color: white;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.profile-header img {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 4px solid white;
+  object-fit: cover;
+}
+
+.profile-info h1 {
+  font-size: 1.6rem;
+}
+
+.designation {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.dept {
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.meta {
+  font-size: 0.8rem;
+  margin-top: 4px;
+  opacity: 0.8;
+}
+
+.profile-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.card-block {
+  background: #f9fafb;
+  padding: 1rem;
+  border-radius: 12px;
+}
+
+.card-block h3 {
+  margin-bottom: 0.6rem;
+  color: #b91c1c;
+}
+
+.card-block p {
+  font-size: 0.9rem;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.card-block ul,
+.card-block ol {
+  padding-left: 1.2rem;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tags span {
+  background: #ffe4e6;
+  color: #b91c1c;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+
+.empty {
+  text-align: center;
+  padding: 3rem;
+  color: #9ca3af;
+}
+
+@media (max-width: 768px) {
+  .profile-body {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+}

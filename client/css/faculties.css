@@ -1,0 +1,162 @@
+
+.faculty-container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 2rem 1.5rem;
+}
+
+.faculty-header h1 {
+  font-size: 2rem;
+  color: #b91c1c;
+}
+
+.subtitle {
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.faculty-controls {
+  display: flex;
+  gap: 10px;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+
+.faculty-controls input {
+  flex: 1;
+  min-width: 220px;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  outline: none;
+}
+
+.faculty-controls input:focus {
+  border-color: #de3445;
+  box-shadow: 0 0 0 3px rgba(222,52,69,0.15);
+}
+
+.btn-clear {
+  background: #f3f4f6;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.btn-clear:hover {
+  background: #e5e7eb;
+}
+
+.faculty-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.faculty-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.25s ease;
+  border: 1px solid #f1f5f9;
+}
+
+.faculty-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+}
+
+.faculty-top {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.faculty-top img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ffe4e6;
+}
+
+.faculty-body h3 {
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.designation {
+  text-align: center;
+  color: #de3445;
+  font-size: 0.85rem;
+}
+
+.dept {
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.8rem;
+}
+
+.tags {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.tags span {
+  background: #ffe4e6;
+  color: #b91c1c;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  gap: 8px;
+}
+
+.page-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: #f3f4f6;
+}
+
+.page-btn.active {
+  background: #de3445;
+  color: white;
+}
+
+.empty {
+  text-align: center;
+  padding: 3rem 0;
+  color: #9ca3af;
+}
+
+.faculty-skeleton {
+  height: 180px;
+  border-radius: 16px;
+  background: linear-gradient(
+    90deg,
+    #f3f4f6 25%,
+    #e5e7eb 50%,
+    #f3f4f6 75%
+  );
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

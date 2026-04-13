@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Departments — ZHCET</title>
+
+  <link rel="stylesheet" href="../css/style.css"/>
+
+  <link rel="stylesheet" href="../css/departments.css"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/index.html" class="brand">ZHCET Portal</a>
+
+  <div class="nav-links">
+    <a href="/index.html">Home</a>
+    <a href="/pages/departments.html" class="active">Academics</a>
+    <a href="/pages/faculties.html">Faculty</a>
+    <a id="nav-admin" href="/pages/dashboard/admin.html" style="display:none">Admin</a>
+    <a id="nav-faculty" href="/pages/dashboard/faculty.html" style="display:none">My Profile</a>
+  </div>
+
+  <a id="nav-auth" href="/pages/login.html" class="btn-login">Login</a>
+</nav>
+
+<div class="dept-container">
+
+  <div class="dept-header">
+    <p class="breadcrumb">Academics</p>
+    <h1>Departments</h1>
+    <p class="subtitle">Browse all departments and explore faculty members</p>
+  </div>
+
+  <div class="dept-controls">
+    <input type="text" id="searchInput" placeholder="🔍 Search departments..." />
+  </div>
+
+  <div id="grid" class="dept-grid">
+    <div class="dept-skeleton"></div>
+    <div class="dept-skeleton"></div>
+    <div class="dept-skeleton"></div>
+  </div>
+
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+
+<script>
+renderNav();
+
+let allDepartments = [];
+
+api.get('/api/departments').then(departments => {
+  allDepartments = departments;
+  renderDepartments(departments);
+});
+
+function renderDepartments(data) {
+  const grid = document.getElementById('grid');
+
+  if (!data.length) {
+    grid.innerHTML = `<p class="empty">No departments found</p>`;
+    return;
+  }
+
+  grid.innerHTML = data.map(d => `
+    <div class="dept-card" onclick="openDept('${d._id}','${encodeURIComponent(d.name)}')">
+
+      <div class="dept-top">
+        <span class="dept-badge">${d.shortName}</span>
+      </div>
+
+      <div class="dept-body">
+        <h3>${d.name}</h3>
+        <p>${d.description || 'No description available'}</p>
+      </div>
+
+      <div class="dept-footer">
+        <span>👨‍🏫 ${d.facultyCount || 0}</span>
+        ${d.established ? `<span>📅 ${d.established}</span>` : ''}
+      </div>
+
+      ${d.hod ? `
+        <div class="dept-hod">
+          HoD: <strong>${d.hod.name}</strong>
+        </div>
+      ` : ''}
+
+    </div>
+  `).join('');
+}
+
+function openDept(id, name) {
+  window.location.href = `/pages/faculties.html?dept=${id}&deptName=${name}`;
+}
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  const value = e.target.value.toLowerCase();
+
+  const filtered = allDepartments.filter(d =>
+    d.name.toLowerCase().includes(value) ||
+    d.shortName.toLowerCase().includes(value)
+  );
+
+  renderDepartments(filtered);
+});
+</script>
+
+</body>
+</html>

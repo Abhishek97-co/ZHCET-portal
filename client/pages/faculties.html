@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Faculty — ZHCET</title>
+
+  <link rel="stylesheet" href="../css/style.css"/>
+
+  <link rel="stylesheet" href="../css/faculties.css"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/index.html" class="brand">ZHCET Portal</a>
+
+  <div class="nav-links">
+    <a href="/index.html">Home</a>
+    <a href="/pages/departments.html">Academics</a>
+    <a href="/pages/faculties.html" class="active">Faculty</a>
+    <a id="nav-admin" href="/pages/dashboard/admin.html" style="display:none">Admin</a>
+    <a id="nav-faculty" href="/pages/dashboard/faculty.html" style="display:none">My Profile</a>
+  </div>
+
+  <a id="nav-auth" href="/pages/login.html" class="btn-login">Login</a>
+</nav>
+
+<div class="faculty-container">
+
+  <div class="faculty-header">
+    <h1 id="page-title">Faculty Directory</h1>
+    <p class="subtitle">Browse and search faculty members</p>
+  </div>
+
+  <div class="faculty-controls">
+    <input id="search-input" type="text" placeholder="🔍 Search by name, specialization..."/>
+    <button class="btn-primary" onclick="doSearch()">Search</button>
+    <button class="btn-clear" id="btn-clear" onclick="clearSearch()">Clear</button>
+  </div>
+
+  <div id="grid" class="faculty-grid"></div>
+
+  <div id="pagination" class="pagination"></div>
+
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script>
+renderNav();
+
+const params  = new URLSearchParams(window.location.search);
+let currentPage = 1;
+let currentSearch = params.get('search') || '';
+const deptId    = params.get('dept') || '';
+const deptName  = params.get('deptName') || '';
+
+if (currentSearch) document.getElementById('search-input').value = currentSearch;
+if (deptName) document.getElementById('page-title').textContent = deptName + ' — Faculty';
+
+function doSearch() {
+  currentSearch = document.getElementById('search-input').value.trim();
+  currentPage = 1;
+  loadFaculties();
+}
+
+function clearSearch() {
+  currentSearch = '';
+  document.getElementById('search-input').value = '';
+  currentPage = 1;
+  loadFaculties();
+}
+
+document.getElementById('search-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doSearch();
+});
+
+function loadFaculties() {
+  const clearBtn = document.getElementById('btn-clear');
+  clearBtn.style.display = currentSearch ? 'inline-block' : 'none';
+
+  const qs = new URLSearchParams({ page: currentPage, limit: 12 });
+  if (currentSearch) qs.set('search', currentSearch);
+  if (deptId) qs.set('dept', deptId);
+
+  document.getElementById('grid').innerHTML = Array(6).fill(
+    '<div class="faculty-skeleton"></div>'
+  ).join('');
+
+  api.get('/api/faculties?' + qs).then(res => {
+
+    if (!res.data.length) {
+      document.getElementById('grid').innerHTML = '<p class="empty">No faculty found</p>';
+      document.getElementById('pagination').innerHTML = '';
+      return;
+    }
+
+    document.getElementById('grid').innerHTML = res.data.map(f => `
+      <a class="faculty-card" href="/pages/faculty.html?id=${f._id}">
+
+        <div class="faculty-top">
+          <img src="${f.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(f.name)}&background=de3445&color=fff`}" />
+        </div>
+
+        <div class="faculty-body">
+          <h3>${f.name}</h3>
+          <p class="designation">${f.designation}</p>
+          <p class="dept">${f.department?.shortName || ''}</p>
+
+          <div class="tags">
+            ${(f.specialization || []).slice(0,2).map(s => `<span>${s}</span>`).join('')}
+          </div>
+        </div>
+
+      </a>
+    `).join('');
+
+    const pages = res.pages;
+
+    document.getElementById('pagination').innerHTML = pages > 1
+      ? Array.from({ length: pages }, (_, i) => i + 1).map(p =>
+          `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button>`
+        ).join('')
+      : '';
+  });
+}
+
+function goPage(p) {
+  currentPage = p;
+  loadFaculties();
+  window.scrollTo(0,0);
+}
+
+loadFaculties();
+</script>
+
+</body>
+</html>

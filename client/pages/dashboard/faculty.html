@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Profile — ZHCET</title>
+
+  <link rel="stylesheet" href="../../css/style.css"/>
+
+  <link rel="stylesheet" href="../../css/faculty-dashboard.css"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/index.html" class="brand">ZHCET Portal</a>
+
+  <div class="nav-links">
+    <a href="/index.html">Home</a>
+    <a href="/pages/faculties.html">Faculty</a>
+    <a href="/pages/dashboard/faculty.html" class="active">My Profile</a>
+  </div>
+
+  <a id="nav-auth" href="#" class="btn-login">Logout</a>
+</nav>
+
+<div class="fd-container">
+
+  <div class="fd-header">
+    <h1>My Profile</h1>
+    <p>View and update your information</p>
+  </div>
+
+  <div id="alert"></div>
+
+  <div id="content"></div>
+
+</div>
+
+<script src="../../js/api.js"></script>
+<script src="../../js/auth.js"></script>
+
+<script>
+const user = requireRole('faculty');
+document.getElementById('nav-auth').onclick = (e) => { e.preventDefault(); logout(); };
+
+const faculty = user?.faculty;
+
+if (!faculty) {
+  document.getElementById('content').innerHTML =
+    '<p class="empty">No faculty record linked. Contact admin.</p>';
+} else {
+  document.getElementById('content').innerHTML = `
+
+    <!-- PROFILE CARD -->
+    <div class="fd-profile">
+
+      <div class="fd-top">
+        <img src="${faculty.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(faculty.name)}&background=de3445&color=fff`}" />
+        <div>
+          <h2>${faculty.name}</h2>
+          <p>${faculty.designation}</p>
+          <span>${faculty.department?.name || ''}</span>
+        </div>
+      </div>
+
+      <div class="fd-info">
+        ${[
+          ['Faculty ID', faculty.facultyId],
+          ['Specialization', (faculty.specialization||[]).join(', ') || '—']
+        ].map(([l,v]) => `
+          <div>
+            <span>${l}</span>
+            <strong>${v}</strong>
+          </div>
+        `).join('')}
+      </div>
+
+    </div>
+
+    <!-- EDIT CARD -->
+    <div class="fd-card">
+      <h3>Update Contact Info</h3>
+      <p class="note">You can only update mobile and email</p>
+
+      <div class="form-group">
+        <label>Mobile</label>
+        <input type="tel" id="f-mobile" value="${faculty.mobile || ''}"/>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="f-email" value="${faculty.email || ''}"/>
+      </div>
+
+      <button class="btn-primary full-btn" onclick="saveContact()">Save Changes</button>
+    </div>
+
+  `;
+}
+
+async function saveContact() {
+  const mobile = document.getElementById('f-mobile').value.trim();
+  const email  = document.getElementById('f-email').value.trim();
+  const alert  = document.getElementById('alert');
+
+  try {
+    await api.patch(`/api/faculties/${faculty._id}/contact`, { mobile, email });
+
+    alert.className = 'alert alert-success';
+    alert.textContent = 'Updated successfully';
+    alert.style.display = 'block';
+
+    setTimeout(() => alert.style.display = 'none', 3000);
+
+  } catch (err) {
+    alert.className = 'alert alert-error';
+    alert.textContent = err.message;
+    alert.style.display = 'block';
+  }
+}
+</script>
+
+</body>
+</html>

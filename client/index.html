@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ZHCET Portal</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/index.html" class="brand">ZHCET Portal</a>
+  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+  <div class="nav-links">
+    <a href="/index.html">Home</a>
+    <a href="/pages/departments.html">Academics</a>
+    <a href="/pages/faculties.html">Faculty</a>
+    <a id="nav-admin"   href="/pages/dashboard/admin.html"   style="display:none">Admin</a>
+    <a id="nav-faculty" href="/pages/dashboard/faculty.html" style="display:none">My Profile</a>
+  </div>
+  <form class="search-form" onsubmit="handleSearch(event)">
+    <input id="search-input" type="text" placeholder="Search faculty…" />
+    <button type="submit">⌕</button>
+  </form>
+  <a id="nav-auth" href="/pages/login.html" class="btn-login">Login</a>
+</nav>
+
+<div class="hero" id="hero">
+  <h1 id="college-name">Zakir Husain College of Engineering &amp; Technology</h1>
+  <p  id="college-tagline">Aligarh Muslim University</p>
+</div>
+
+<div class="stats" style="max-width:900px;margin:0 auto;">
+  <div class="stat-card"><div class="value" id="stat-faculty">—</div><div class="label">Faculty Members</div></div>
+  <div class="stat-card"><div class="value" id="stat-depts">—</div><div class="label">Departments</div></div>
+  <div class="stat-card"><div class="value" id="stat-est">—</div><div class="label">Established</div></div>
+</div>
+
+<div class="container">
+  <div id="about-section" style="margin-bottom:2rem;display:none;">
+    <h2 style="color:#166534;margin-bottom:.75rem;">About ZHCET</h2>
+    <p id="about-text" style="color:#6b7280;line-height:1.7;"></p>
+  </div>
+
+  <div id="achievements-section" style="display:none;margin-bottom:2rem;">
+    <h2 style="color:#166534;margin-bottom:1rem;">Achievements</h2>
+    <div id="achievements-grid" class="grid grid-2"></div>
+  </div>
+
+  <div class="quick-links">
+    <a href="/pages/departments.html" class="quick-link-solid">
+      <h3>Academics</h3><p>Browse departments and faculty</p>
+    </a>
+    <a href="/pages/faculties.html" class="quick-link-outline">
+      <h3>Faculty Directory</h3><p>Search all faculty members</p>
+    </a>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  renderNav();
+
+  function handleSearch(e) {
+    e.preventDefault();
+    const q = document.getElementById('search-input').value.trim();
+    if (q) window.location.href = `/pages/faculties.html?search=${encodeURIComponent(q)}`;
+  }
+
+  Promise.all([
+    api.get('/api/college'),
+    api.get('/api/faculties?limit=1'),
+    api.get('/api/departments'),
+  ]).then(([college, facultyRes, departments]) => {
+
+    document.getElementById('college-name').textContent    = college.name    || 'Zakir Husain College of Engineering & Technology';
+    document.getElementById('college-tagline').textContent = college.tagline || 'Aligarh Muslim University';
+
+    document.getElementById('stat-faculty').textContent = facultyRes.total      || '0';
+    document.getElementById('stat-depts').textContent   = departments.length    || '0';
+    document.getElementById('stat-est').textContent     = college.established   || '1966';
+
+    if (college.about) {
+      document.getElementById('about-text').textContent = college.about;
+      document.getElementById('about-section').style.display = 'block';
+    }
+
+   
+    if (college.achievements?.length) {
+      document.getElementById('achievements-section').style.display = 'block';
+      document.getElementById('achievements-grid').innerHTML = college.achievements.map(a => `
+        <div class="card">
+          <div style="font-size:.75rem;font-weight:600;color:#166534;margin-bottom:.3rem;">${a.year || ''}</div>
+          <div style="font-weight:600;margin-bottom:.25rem;">${a.title}</div>
+          <div style="font-size:.85rem;color:#6b7280;">${a.description || ''}</div>
+        </div>
+      `).join('');
+    }
+
+  }).catch(() => {
+    document.getElementById('stat-faculty').textContent = '—';
+    document.getElementById('stat-depts').textContent   = '—';
+    document.getElementById('stat-est').textContent     = '1966';
+  });
+</script>
+</body>
+</html>
